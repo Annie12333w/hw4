@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus Customs — App Check (Problem 11)</title>
+<style>
+  body { margin: 0; background: #f8f6f1; color: #1d1d1b; font: 16px/1.6 "Helvetica Neue", Arial, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1, h2 { font-family: Georgia, "Times New Roman", serif; font-weight: normal; margin: 0 0 8px; }
+  h1 { font-size: 2.3rem; }
+  h2 { font-size: 1.6rem; }
+  .meta { color: #6e695f; margin: 0 0 24px; }
+  nav { background: #fff; border: 1px solid #e2ddd2; padding: 14px 20px; margin-bottom: 40px; }
+  nav a { color: #0f2d52; margin-right: 22px; }
+  section { background: #fff; border: 1px solid #e2ddd2; padding: 28px; margin-bottom: 36px; }
+  .pass { display: inline-block; background: #eaf1ea; color: #2f6b45; font-size: 0.75rem; font-weight: bold;
+          letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 10px; margin-left: 10px; vertical-align: middle; }
+  figure { margin: 18px 0 14px; }
+  figure img { width: 100%; height: auto; border: 1px solid #e2ddd2; display: block; }
+  figcaption { font-size: 0.85rem; color: #6e695f; margin-top: 6px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  table { border-collapse: collapse; font-size: 0.9rem; margin-top: 10px; }
+  th, td { border: 1px solid #e2ddd2; padding: 6px 12px; text-align: left; }
+  th { background: #f0ede6; font-weight: normal; }
+  code { background: #f0ede6; padding: 1px 5px; }
+  @media (max-width: 760px) { .pair { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Campus Customs — App Check</h1>
+  <p class="meta">
+    Problem 11 · Tested 2026-09-28 on the live local site (frontend <code>localhost:5173</code>, FastAPI backend
+    <code>localhost:8000</code>, real PydanticAI agent on <code>gpt-5.6-luna</code> via Portkey) in Chrome at 1440×900, as a guest.
+    Click any screenshot to open it full size.
+  </p>
+
+  <nav>
+    <strong>Checks:</strong>
+    <a href="#check-1">1. Chat inventory check</a>
+    <a href="#check-2">2. Search results on the page</a>
+    <a href="#check-3">3. Product pop-up</a>
+  </nav>
+
+  <section id="check-1">
+    <h2>1. Chat Checks an Item's Stock and Price <span class="pass">Pass</span></h2>
+    <figure>
+      <a href="app_check_images/01_chat_inventory_check.png"><img src="app_check_images/01_chat_inventory_check.png" alt="Chat answering a stock and price question for the Ice Hockey Left Chest Hoodie"></a>
+      <figcaption>Question: “Is the Ice Hockey Left Chest Hoodie in stock in a medium? What's the price?” (reply in 11 s)</figcaption>
+    </figure>
+    <p>
+      The assistant looked the item up in the database and answered honestly: it is <strong>sold out in M</strong>, costs
+      <strong>$68</strong>, and <strong>XS, S, and XXL</strong> are in stock. It also added a clickable product card. Every fact matches the
+      <code>catalogue</code> and <code>inventory</code> tables:
+    </p>
+    <table>
+      <tr><th>Size</th><td>XS</td><td>S</td><td>M</td><td>L</td><td>XL</td><td>XXL</td><th>Price</th></tr>
+      <tr><th>Database qty</th><td>20</td><td>8</td><td><strong>0</strong></td><td>0</td><td>0</td><td>25</td><td>$68.00</td></tr>
+    </table>
+  </section>
+
+  <section id="check-2">
+    <h2>2. Category Question Updates the Page with Product Cards <span class="pass">Pass</span></h2>
+    <figure>
+      <a href="app_check_images/02_chat_search_results_on_page.png"><img src="app_check_images/02_chat_search_results_on_page.png" alt="T-shirt search results shown as product cards on the Products page"></a>
+      <figcaption>Question: “What t-shirts do you have available?” (reply in 6 s). The page moved to <code>/products?results=chat</code>.</figcaption>
+    </figure>
+    <p>
+      The agent returned structured matches, and the site filled the Products page with a <strong>“T-Shirts In Stock”</strong> banner and
+      <strong>25 product cards</strong>. That matches the 25 T-shirts in the database, all $32 as the reply says. The chat also shows 3 highlights and a
+      “View 25 Items on Page” button, and <em>Return to Full Menu</em> (not visible behind the chat) restores all 102 products.
+    </p>
+  </section>
+
+  <section id="check-3">
+    <h2>3. Product Opens in a Floating Window Over the Previous Page <span class="pass">Pass</span></h2>
+    <div class="pair">
+      <figure>
+        <a href="app_check_images/03a_products_grid_scrolled.png"><img src="app_check_images/03a_products_grid_scrolled.png" alt="Products grid scrolled down before opening an item"></a>
+        <figcaption>Before: Products grid scrolled down 1,400 px.</figcaption>
+      </figure>
+      <figure>
+        <a href="app_check_images/03b_product_popup_over_grid.png"><img src="app_check_images/03b_product_popup_over_grid.png" alt="Big Yale Tri Blend T Shirt open in a pop-up over the shaded grid"></a>
+        <figcaption>After clicking “Big Yale Tri Blend T Shirt”: the pop-up opens over the shaded grid.</figcaption>
+      </figure>
+    </div>
+    <p>
+      The single-item view opened as a floating window showing a large image, price, description, colors, and live stock by size (XS and L sold out,
+      matching the database). The grid stayed in place behind it. Closing with <strong>×</strong> returned to <code>/products</code> at the same scroll
+      position (about 1,400 px), so the shopper doesn't lose their place.
+    </p>
+  </section>
+</main>
+</body>
+</html>

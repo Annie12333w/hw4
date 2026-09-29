@@ -1,0 +1,29 @@
+# Local-only data pack (database + product images) — never commit
+data/
+
+# Secrets — commit only .env.example
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Node / build
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Logs and scratch
+*.log
+*.recovery.jsonl
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
